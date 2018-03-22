@@ -16,7 +16,7 @@ class FileUploadView(APIView):
 
     def post(self, request, filename, format=None):
         serializers = ImageSerializer(data=request.data)
-        file_obj = request.data['file']
+        file_obj = request.data['files']
         filepath = os.path.join(settings.MEDIA_ROOT, filename)
         with open(filepath, 'wb+') as temp_file:
             for chunk in file_obj.chunks():
