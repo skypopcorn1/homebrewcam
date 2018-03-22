@@ -21,12 +21,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '*%%pxs)((wmby!(uq40dlp@!l$g!!09h_(2+y2!e6zb5-x4#hb'
+SECRET_KEY = os.environ.get('SECRET_KEY', '*%%pxs)((wmby!(uq40dlp@!l$g!!09h_(2+y2!e6zb5-x4#hb')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
+ALLOWED_HOSTS =  ['brewcam.herokuapp.com', 'localhost']
 
-ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -80,6 +80,15 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+
+
+
+# add this
+import dj_database_url
+db_from_env = dj_database_url.config()
+DATABASES['default'].update(db_from_env)
+DATABASES['default']['CONN_MAX_AGE'] = 500
 
 
 # Password validation
