@@ -3,5 +3,5 @@ from . import views
 
 
 urlpatterns = [
-    url(r'^$', views.posts_home, name="home"),
+    url(r'^$', views.site_home, name="home"),
     ]
