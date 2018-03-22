@@ -26,7 +26,7 @@ SECRET_KEY = '*%%pxs)((wmby!(uq40dlp@!l$g!!09h_(2+y2!e6zb5-x4#hb'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS =  ['brewcam.herokuapp.com', 'localhost']
 
 
 # Application definition
