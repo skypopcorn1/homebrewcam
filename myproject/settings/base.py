@@ -133,8 +133,8 @@ AWS_PRELOAD_METADATA = True
 if AWS_STORAGE_BUCKET_NAME:
     STATIC_URL = 'https://s3-%s.amazonaws.com/%s/static/' % (AWS_REGION, AWS_STORAGE_BUCKET_NAME)
     MEDIA_URL = 'https://s3-%s.amazonaws.com/%s/media/' % (AWS_REGION, AWS_STORAGE_BUCKET_NAME)
-    STATICFILES_STORAGE = 'brewcam.customstorages.StaticStorage'
-    DEFAULT_FILE_STORAGE = 'brewcam.customstorages.MediaStorage'
+    STATICFILES_STORAGE = 'bcam.customstorages.StaticStorage'
+    DEFAULT_FILE_STORAGE = 'bcam.customstorages.MediaStorage'
     STATICFILES_LOCATION = 'static'  # name of folder within bucket
     MEDIAFILES_LOCATION = 'media'    # name of folder within bucket
 else:
