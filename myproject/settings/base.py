@@ -121,21 +121,63 @@ USE_L10N = True
 
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.9/howto/static-files/
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATIC_URL = '/static/'
+AWS_REGION = os.environ.get('AWS_REGION', '')  # e.g. eu-west-1
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY', '')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_KEY', '')
+AWS_STORAGE_BUCKET_NAME = os.environ.get('S3_BUCKET', '')
+AWS_S3_CALLING_FORMAT = "boto.s3.connection.OrdinaryCallingFormat"
+AWS_PRELOAD_METADATA = True
 
-# Extra places for collectstatic to find static files.
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-)
+#...
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+if AWS_STORAGE_BUCKET_NAME:
+    STATIC_URL = 'https://s3-%s.amazonaws.com/%s/static/' % (AWS_REGION, AWS_STORAGE_BUCKET_NAME)
+    MEDIA_URL = 'https://s3-%s.amazonaws.com/%s/media/' % (AWS_REGION, AWS_STORAGE_BUCKET_NAME)
+    STATICFILES_STORAGE = 'brewcam.customstorages.StaticStorage'
+    DEFAULT_FILE_STORAGE = 'brewcam.customstorages.MediaStorage'
+    STATICFILES_LOCATION = 'static'  # name of folder within bucket
+    MEDIAFILES_LOCATION = 'media'    # name of folder within bucket
+else:
+    STATIC_URL = '/static/'
+    MEDIA_URL = '/media/'
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), "myproject/media_cdn")
+MEDIA_URL = os.environ.get('MEDIA_URL', MEDIA_URL)
+STATIC_URL = os.environ.get('STATIC_URL', STATIC_URL)
 
+#...
+
+def get_static_memcache():
+    # For python 2.7, just 'import urlparse'
+    from urllib.parse import urlparse
+
+    if os.environ.get('REDIS_URL', ''):
+        redis_url = urlparse(os.environ.get('REDIS_URL'))
+        return {
+            "BACKEND": "redis_cache.RedisCache",
+            'TIMEOUT': None,
+            "LOCATION": "{0}:{1}".format(redis_url.hostname, redis_url.port),
+            "OPTIONS": {
+                "PASSWORD": redis_url.password,
+                "DB": 0,
+            }
+        }
+    return {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'TIMEOUT': None,
+        'OPTIONS': {
+            'MAX_ENTRIES': 5000
+        }
+    }
+
+CACHES = {
+    # Replace the default cache with your existing one (if you have any)
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'
+    },
+    'collectfast': get_static_memcache(),
+}
+
+COLLECTFAST_CACHE = 'collectfast'
 
 # security settings
 CORS_REPLACE_HTTPS_REFERER      = False
